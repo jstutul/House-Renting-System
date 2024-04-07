@@ -1,0 +1,118 @@
+{% extends 'App_Dashboard/base.html'%}
+{% load static%}
+{% block dashboard%}
+{% include 'alert.html'%}
+<div class="container">
+    <div class="main-body">
+        <div class="row gutters-sm">
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-center text-center">
+                            {% if request.user.userprofile.photo %}
+                            <img src="{{request.user.userprofile.photo.url}}" alt="profile" class="rounded-circle"
+                                width="150">
+                            {% else %}
+                            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="profile"
+                                class="rounded-circle" width="150">
+                            {% endif %}
+
+                            <div class="mt-3">
+                                <h4>{{request.user}}</h4>
+                                {% if request.user.is_superuser %}
+                                <p class="text-secondary mb-1">Login as <b>Admin</b></p>
+                                {% else %}
+                                {% if request.user.userprofile %}
+                                {% if request.user.userprofile.userType %}
+                                <p class="text-secondary mb-1">Login as
+                                    <b>{{request.user.userprofile.get_user_type }}</b>
+                                </p>
+                                {% endif %}
+                                {% endif %}
+
+                                {% endif%}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <h6 class="mb-0">Full Name</h6>
+                            </div>
+                            <div class="col-sm-8 text-secondary">
+                                <b>:</b> {{ request.user.get_full_name }}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <h6 class="mb-0">Email</h6>
+                            </div>
+                            <div class="col-sm-8 text-secondary">
+                                <b>:</b> {{request.user.email}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <h6 class="mb-0">Phone</h6>
+                            </div>
+                            <div class="col-sm-8 text-secondary">
+                                <b>:</b> {{request.user.userprofile.mobile}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <h6 class="mb-0">Nid</h6>
+                            </div>
+                            <div class="col-sm-8 text-secondary">
+                                <b>:</b> {{request.user.userprofile.nid}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <h6 class="mb-0">City</h6>
+                            </div>
+                            <div class="col-sm-8 text-secondary">
+                                <b>:</b> {{request.user.userprofile.city}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <h6 class="mb-0">Present Address</h6>
+                            </div>
+                            <div class="col-sm-8 text-secondary">
+                                <b>:</b> {{request.user.userprofile.present_address}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <h6 class="mb-0">Parmanent Address</h6>
+                            </div>
+                            <div class="col-sm-8 text-secondary">
+                                <b>:</b> {{request.user.userprofile.permanent_address}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <a class="btn btn-info" href="{% url 'App_Account:profileupdate'%}">Update</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock%}

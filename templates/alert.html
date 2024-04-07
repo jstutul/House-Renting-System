@@ -1,0 +1,24 @@
+{% load static %}
+{% if messages %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+<style>
+    .toast-top-right {
+        top: 10%;
+    }
+</style>
+{% for message in messages %}
+<script>
+    $(document).ready(function () {
+        {% if message.tags == 'success' %}
+        toastr.success("{{ message }}");
+        {% elif message.tags == 'error' %}
+        toastr.error("{{ message }}");
+        {% else %}
+        toastr.error("{{ message }}");
+        {% endif %}
+    });
+</script>
+{% endfor %}
+{% endif %}

@@ -1,0 +1,283 @@
+{% extends 'App_Dashboard/base.html'%}
+{% block title %}
+EasyRent-Add rent post
+{% endblock %}
+{% block css %}
+<style>
+    .update-container {
+        margin: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+    }
+
+    .btnR {
+        position: absolute;
+        top: 0;
+        left: -8px;
+    }
+</style>
+{% endblock %}
+{% load static%}
+{% block dashboard%}
+
+{% include 'alert.html'%}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto update-container">
+            <div class="main-body">
+                <h3 class="text-left border-bottom mb-2">Update Rent Post</h2>
+                    <form method="POST" class="g-3" id="AddRentPost" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ house_form.media }}
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <label for="txtTitle" class="form-label">Rent Title</label>
+                                <input type="text" class="form-control" id="txtTitle" placeholder="Enter a title"
+                                    name="txtTitle" value="{{house.title}}">
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-lg-6">
+                                <label for="txtCity" class="form-label">City</label>
+                                <select class="form-select" id="txtCity" name="txtCity">
+                                    <option value="0">Select</option>
+                                    {% for city in cities %}
+                                    <option value="{{ city.id }}" {{city.s}}>
+                                        {{ city.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="lastName" class="form-label">Type</label>
+                                <select class="form-select" id="txtType" name="txtType">
+                                    <option value="0">Select</option>
+                                    {% for item in house_types %}
+                                    <option value="{{ item.value }}" {{item.s}}>{{ item.label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-lg-6">
+                                <label for="txtBuilding" class="form-label">House/Building Name</label>
+                                <input type="text" class="form-control" id="txtBuilding"
+                                    placeholder="Enter a building name" name="txtBuilding" value="{{house.house_name}}">
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="txtArea" class="form-label">Total Area(square feet)</label>
+                                <input type="text" class="form-control" id="txtArea"
+                                    placeholder="Enter a area in square" name="txtArea" value="{{house.house_area}}">
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-lg-6">
+                                <label for="txtBuilding" class="form-label">Parking Available</label>
+                                <br>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="txtParking"
+                                        id="txtParkingYes" value="1" {{ my_check }}>
+                                    <label class="form-check-label" for="txtParkingYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="txtParking"
+                                        id="txtParkingNo" value="0" {{ my_not_check }}>
+                                    <label class="form-check-label" for="txtParkingNo">No</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="txtFloor" class="form-label">Floor</label>
+                                <input type="text" class="form-control" id="txtFloor" placeholder="Enter a floor no"
+                                    name="txtFloor" value="{{house.floor_no}}">
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-lg-6">
+                                <label for="txtBedroom" class="form-label">Total Bedrooms</label>
+                                <input type="text" class="form-control" id="txtBedroom"
+                                    placeholder="Enter total bedrooms" name="txtBedroom"
+                                    value="{{house.total_bedrooms}}">
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="txtBath" class="form-label">Total Bathroom</label>
+                                <input type="text" class="form-control" id="txtBath" placeholder="Enter total bathroom"
+                                    name="txtBath" value="{{house.total_bathrooms}}">
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-lg-6">
+                                <label for="txtAddress" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="txtAddress" placeholder="Enter a address"
+                                    name="txtAddress" value="{{house.address}}">
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="txtMapUrl" class="form-label">Google Map Link</label>
+                                <input type="text" class="form-control" id="txtMapUrl" placeholder="Enter a map url"
+                                    name="txtMapUrl" value="{{house.map_link}}">
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-lg-6">
+                                <label for="txtMonthlyRent" class="form-label">Monthly Rent</label>
+                                <input type="text" class="form-control" id="txtMonthlyRent"
+                                    placeholder="Enter monthly rent amount" name="txtMonthlyRent"
+                                    value="{{house.monthly_rent}}">
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="txtAdvance" class="form-label">Advance Amount</label>
+                                <input type="text" class="form-control" id="txtAdvance"
+                                    placeholder="Enter advance amount" name="txtAdvance" value="{{house.advacne_rent}}">
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-lg-12">
+                                {{ house_form }}
+                            </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="col-lg-12 mb-2">
+                                <label for="txtImages" class="form-label">Images</label>
+                                <input class="form-control" type="file" multiple="" name="txtImages" id="txtImages">
+                            </div>
+                            <div class="col-lg-12">
+                                <label for="txtThumbnail" class="form-label">Preview Image</label>
+                                <div class="img-container d-flex" id="imagePreviews">
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Update</button>
+                    </form>
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+{% block js%}
+<script>
+    const photoInput = document.getElementById('txtImages');
+    photoInput.addEventListener('change', previewImages);
+
+    function previewImages() {
+        var previewContainer = document.getElementById('imagePreviews');
+        var files = document.getElementById('txtImages').files;
+        previewContainer.innerHTML = '';
+
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var image = document.createElement('img');
+                image.src = e.target.result;
+                image.style.width = '120px';
+                image.style.height = '120px';
+                image.style.marginRight = '10px';
+                image.style.marginBottom = '10px';
+
+                var deleteBtn = document.createElement('button');
+                deleteBtn.innerHTML = 'x';
+                deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm', 'btnR');
+                deleteBtn.addEventListener('click', function () {
+                    previewContainer.removeChild(div);
+                });
+                var div = document.createElement('div');
+                div.appendChild(image);
+                div.appendChild(deleteBtn);
+                div.classList.add('position-relative');
+
+                previewContainer.appendChild(div);
+            }
+
+            reader.readAsDataURL(file);
+        }
+    }
+    $(document).ready(function () {
+        $('#AddRentPost').submit(function (event) {
+            event.preventDefault();
+            var txtImages = document.getElementById('txtImages');
+            var txtTitle = $('#txtTitle').val();
+            var txtCity = $('#txtCity option:selected').val();
+            var txtType = $('#txtType option:selected').val();
+            var txtBuilding = $('#txtBuilding').val();
+            var txtBedroom = $('#txtBedroom').val();
+            var txtBath = $('#txtBath').val();
+            var txtArea = $('#txtArea').val();
+            var txtParking = $("input[name='txtParking']:checked").val()
+            var txtFloor = $('#txtFloor').val();
+            var txtMonthlyRent = $('#txtMonthlyRent').val();
+            var txtAdvance = $('#txtAdvance').val();
+            var txtAddress = $('#txtAddress').val();
+            var txtMapUrl = $('#txtMapUrl').val();
+            if (txtTitle == "") {
+                $.alert.open('error', 'Enter a rent title.');
+                return false;
+            }
+            if (txtCity == "0") {
+                $.alert.open('error', 'Select city');
+                return false;
+            }
+            if (txtType == "0") {
+                $.alert.open('error', 'Select rent type');
+                return false;
+            }
+            if (txtBuilding == "") {
+                $.alert.open('error', 'Enter a building name.');
+                return false;
+            }
+            if (txtArea == "") {
+                $.alert.open('error', 'Enter a total area un aquare feet.');
+                return false;
+            }
+            if (txtParking == undefined) {
+                $.alert.open('error', 'Select parking status.');
+                return false;
+            }
+            if (txtFloor == "") {
+                $.alert.open('error', 'Enter Floor no.');
+                return false;
+            }
+            if (txtBedroom == "") {
+                $.alert.open('error', 'Enter no of bed rooms.');
+                return false;
+            }
+            if (txtBath == "") {
+                $.alert.open('error', 'Enter no of bath rooms.');
+                return false;
+            }
+            if (txtAddress == "") {
+                $.alert.open('error', 'Enter address.');
+                return false;
+            }
+            if (txtMapUrl == "") {
+                $.alert.open('error', 'Enter map url.');
+                return false;
+            }
+            if (txtMonthlyRent == "") {
+                $.alert.open('error', 'Enter Montly rent amount.');
+                return false;
+            }
+            if (txtAdvance == "") {
+                $.alert.open('error', 'Enter advance amount.');
+                return false;
+            }
+            if (txtImages.files.length == "0") {
+                $.alert.open('error', 'Select an images.');
+                return false;
+            }
+
+            $(this).unbind('submit').submit();
+        });
+    });
+</script>
+{% endblock%}

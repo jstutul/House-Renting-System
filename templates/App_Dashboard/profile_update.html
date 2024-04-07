@@ -1,0 +1,96 @@
+{% extends 'App_Dashboard/base.html'%}
+{% load static%}
+{% block css%}
+<style>
+    .update-container {
+        margin: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock%}
+{% block dashboard%}
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto update-container">
+            <div class="main-body">
+                <h3 class="text-left border-bottom mb-2">Update Profile</h2>
+                    <form method="POST" class="row g-3" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="col-lg-6">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName"
+                                value="{{ request.user.first_name }}" required>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName"
+                                value="{{ request.user.last_name }}" required>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="mobile" class="form-label">Mobile</label>
+                            <input type="text" class="form-control" id="mobile" name="mobile"
+                                value="{{ request.user.userprofile.mobile }}" required>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="nid" class="form-label">NID</label>
+                            <input type="text" class="form-control" id="nid" name="nid"
+                                value="{{ request.user.userprofile.nid }}" required>
+                        </div>
+                        <div class="col-lg-12">
+                            <label for="presentAddress" class="form-label">Present Address</label>
+                            <textarea class="form-control" id="presentAddress" name="presentAddress" rows="2"
+                                required>{{ request.user.userprofile.present_address }}</textarea>
+                        </div>
+                        <div class="col-lg-12">
+                            <label for="permanentAddress" class="form-label">Permanent Address</label>
+                            <textarea class="form-control" id="permanentAddress" name="permanentAddress" rows="2"
+                                required>{{ request.user.userprofile.permanent_address }}</textarea>
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="photo" class="form-label">Photo</label>
+                            <input type="file" class="form-control" id="photo" name="photo" accept="image/*">
+                        </div>
+                        <div class="col-lg-6">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city"
+                                value="{{ request.user.userprofile.city }}" required>
+                        </div>
+                        <div class="col-lg-6">
+                            <img id="imagePreview" src="#" alt="Preview"
+                                style="display: none; max-width: 200px; max-height: 200px;">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+                    </form>
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock%}
+{% block js%}
+<script>
+    function handleFileInputChange(event) {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const imagePreview = document.getElementById('imagePreview');
+                imagePreview.src = event.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    const photoInput = document.getElementById('photo');
+    photoInput.addEventListener('change', handleFileInputChange);
+</script>
+{% endblock%}

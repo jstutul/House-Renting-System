@@ -1,0 +1,75 @@
+{% extends 'base.html'%}
+{% load static%}
+{% block title%}EasyRent - login{% endblock%}
+{% block css %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .signup-container {
+        max-width: 500px;
+        margin: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+{% if request.GET.command == 'verification' %}
+<div class="container mx-auto alert alert-info text-center" role="alert" style="    margin: 50px 0px;">
+    Thank you for signup. We have sent you a verification email to your email address {{request.GET.email}}
+    <br><br>
+    Already verified <a href="{% url 'App_Account:login' %}">Login</a>
+
+</div>
+{% else %}
+{% include 'alert.html'%}
+<div class="signup-container">
+    <h2 class="text-center mb-4">Sign In</h2>
+    <form method="POST" id="signupForm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
+        </div>
+        <button type="submit" class="btn btn-primary w-100" id="btnSubmit">Sign in</button>
+    </form>
+    <div class="text-center mt-3">
+        Don't have an account? <a href="{% url 'App_Account:signup'%}">Register</a><br>
+        Forgot Password? <a href="{% url 'password_reset'%}">Reset Password</a>
+    </div>
+</div>
+{% endif %}
+{% endblock%}
+
+{% block js%}
+<script>
+    $(document).ready(function () {
+        $('#signupForm').submit(function (event) {
+            event.preventDefault();
+            var username = $('#username').val().trim();
+            var password = $('#password').val();
+
+            if (username == "") {
+                $.alert.open('error', 'Enter username');
+                return false;
+            }
+            if (password == "") {
+                $.alert.open('error', 'Enter password.');
+                return false;
+            }
+            $(this).unbind('submit').submit();
+        });
+    });
+</script>
+{% endblock%}

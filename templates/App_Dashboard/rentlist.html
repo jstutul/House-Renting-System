@@ -1,0 +1,70 @@
+{% extends 'App_Dashboard/base.html'%}
+{% load static%}
+{% block dashboard%}
+{% block css %}
+<link href="https://cdn.datatables.net/v/dt/dt-2.0.3/datatables.min.css" rel="stylesheet">
+<style>
+    .dataTable {
+        width: 100% !important;
+    }
+</style>
+{% endblock %}
+{% include 'alert.html'%}
+<div class="container-fluid px-4">
+    <div class="row my-5">
+        <div class="col-lg-12 mb-2">
+            <span class="mb-3" style="font-size: 24px;">Rent List<a href="{% url 'App_Account:addrent'%}"
+                    style="float: inline-end;" class="btn btn-primary">Add Rent Post</a>
+        </div>
+        <hr>
+
+
+        <div class="col">
+            <table class="table bg-white rounded shadow-sm  table-hover" id="rentlist">
+                <thead>
+                    <tr>
+                        <th scope="col" width="50">SL</th>
+                        <th scope="col">Rent Title</th>
+                        <th scope="col">City</th>
+                        <th scope="col">Advannce</th>
+                        <th scope="col">Total Rent</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in myrent_list%}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{item.title}}</td>
+                        <td>{{item.city}}</td>
+                        <td>{{item.advacne_rent}}</td>
+                        <td>{{item.monthly_rent}}</td>
+                        <td>{% if item.is_active == True %} <span
+                                class="badge bg-success text-light p-2">Approved</span> {% else %}
+                            <span class="badge bg-warning text-light p-2">Pending</span> {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center list-action">
+                                <a class="badge bg-success mx-2" href="{% url 'App_Account:editrent' item.id %}"><i
+                                        class="fas fa-edit"></i></a>
+                                <a class="badge bg-danger" href=""><i class="fa fa-trash"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block js%}
+<script src="https://cdn.datatables.net/v/dt/dt-2.0.3/datatables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#rentlist').DataTable();
+    });
+</script>
+{% endblock%}
