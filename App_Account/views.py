@@ -50,7 +50,6 @@ def admin_required(view_func):
 
 
 def SignupView(request):
-    print("login user",request.user)
     if request.method == 'POST':
         username        = request.POST['username']
         email           = request.POST['email']
@@ -203,7 +202,6 @@ def ProfileUpdateView(request):
 @house_owner_required
 def RentListView(request):
     myrent_list=House.objects.filter(owner=request.user)
-    print(myrent_list)
     context={
         'myrent_list':myrent_list
     }
@@ -213,14 +211,47 @@ def RentListView(request):
 def RentEditView(request,id):
     house = get_object_or_404(House, id=id)
     if request.method == 'POST':
-        house_form = HouseForm(request.POST, request.FILES, instance=house)
-        if house_form.is_valid():
-            house = house_form.save(commit=False)
-            house.owner = request.user
-            house.save()
-            house_form.save_m2m()  # Save many-to-many relationships
-            messages.success(request, "Rent post updated successfully.")
-            return redirect("App_Account:addrent")
+        txtTitle = request.POST.get('txtTitle')
+        txtCity = request.POST.get('txtCity')
+        txtType = request.POST.get('txtType')
+        txtBuilding = request.POST.get('txtBuilding')
+        txtArea = request.POST.get('txtArea')
+        txtParking = request.POST.get('txtParking')
+        txtFloor = request.POST.get('txtFloor')
+        txtBedroom = request.POST.get('txtBedroom')
+        txtBath = request.POST.get('txtBath')
+        txtAddress = request.POST.get('txtAddress')
+        txtMapUrl = request.POST.get('txtMapUrl')
+        txtMonthlyRent = request.POST.get('txtMonthlyRent')
+        txtAdvance = request.POST.get('txtAdvance')
+        txtDescription = request.POST['description']
+        city = City.objects.get(id=txtCity)
+        is_parking = True if txtParking == "1" else False  
+
+        house.title = txtTitle
+        house.city = city
+        house.address = txtAddress
+        house.house_name = txtBuilding
+        house.house_type = txtType
+        house.house_area = txtArea
+        house.description = txtDescription
+        house.is_parking = is_parking
+        house.total_bedrooms = txtBedroom
+        house.total_bathrooms = txtBath
+        house.floor_no = txtFloor
+        house.map_link = txtMapUrl
+        house.monthly_rent = txtMonthlyRent
+        house.advacne_rent = txtAdvance
+
+        if 'txtImages' in request.FILES:
+            house.images.all().delete()
+            txtImages = request.FILES.getlist('txtImages')
+            for image_file_path in txtImages:
+                house_image = HouseImage.objects.create(image=image_file_path)
+                house.images.add(house_image)
+        house.save()
+        messages.success(request,"Rent post update successfully.")  
+        return redirect( reverse("App_Account:editrent", args=[id]))  
     else:
         house_form = HouseForm(instance=house)
     new_cities = []
@@ -320,3 +351,79 @@ def AddRentView(request):
     return render(request,'App_Dashboard/addrent.html',context)
 
 
+@house_owner_required
+def RentDeleteView(request, id):
+    try:
+        house = get_object_or_404(House, id=id)
+        if house:
+            house.delete()
+            messages.success(request, "Post deleted successfully.")
+    except House.DoesNotExist:
+        messages.info(request, "House not found.")
+    return redirect("App_Account:rentlist")
+    
+
+
+
+
+
+
+
+
+
+@admin_required
+def PendingRentListView(request):
+    myrent_list=House.objects.all()
+    print(myrent_list)
+    context={
+        'myrent_list':myrent_list
+    }
+    return render(request,'App_Admin/pendingrentlist.html',context)
+@admin_required
+def PendingRentPreviewiew(request,id):
+    house = get_object_or_404(House, id=id)
+    house_form = HouseForm(instance=house)
+    new_cities = []
+    cities = City.objects.filter(is_active=True)
+    for city in cities:
+        if city.id == house.city.id:
+            new_cities.append(city)
+    new_house_type = []
+    house_type_list = list(HOUSE_TYPE_LIST)    
+    for value,label in house_type_list:
+        if value == house.house_type:
+            new_house_type.append({'value': value, 'label': label, 's': 'selected'})
+    context = {
+        'cities': new_cities,
+        'house':house,
+        'house_form': house_form,
+        'house_types': new_house_type,
+    }
+    return render(request,'App_Admin/pendingpreview.html',context)
+
+
+@admin_required
+def ApprovePendingRentListView(request,id):
+    try:
+        house = get_object_or_404(House, id=id)
+        if house:
+            house.is_active=True
+            house.is_reject=False
+            house.save()
+            messages.success(request, "Post approved successfully.")
+    except House.DoesNotExist:
+        messages.info(request, "Post not found.")
+    return redirect("App_Account:pendingrentlist")
+
+@admin_required
+def CancelPendingRentListView(request,id):
+    try:
+        house = get_object_or_404(House, id=id)
+        if house:
+            house.is_active=False
+            house.is_reject=True
+            house.save()
+            messages.success(request, "Post cancel successfully.")
+    except House.DoesNotExist:
+        messages.info(request, "Post not found.")
+    return redirect("App_Account:pendingrentlist")

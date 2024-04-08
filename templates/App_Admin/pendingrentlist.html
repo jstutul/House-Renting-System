@@ -1,5 +1,6 @@
 {% extends 'App_Dashboard/base.html'%}
 {% load static%}
+{% block title %}EasyRent - Pending rent list{% endblock %}
 {% block dashboard%}
 {% block css %}
 <link href="https://cdn.datatables.net/v/dt/dt-2.0.3/datatables.min.css" rel="stylesheet">
@@ -13,12 +14,9 @@
 <div class="container-fluid px-4">
     <div class="row my-5">
         <div class="col-lg-12 mb-2">
-            <span class="mb-3" style="font-size: 24px;">Rent List<a href="{% url 'App_Account:addrent'%}"
-                    style="float: inline-end;" class="btn btn-primary">Add Rent Post</a>
+            <span class="mb-3" style="font-size: 24px;">Pending Rent List</span>
         </div>
         <hr>
-
-
         <div class="col">
             <table class="table bg-white rounded shadow-sm  table-hover" id="rentlist">
                 <thead>
@@ -40,9 +38,8 @@
                         <td>{{item.city}}</td>
                         <td>{{item.advacne_rent}}</td>
                         <td>{{item.monthly_rent}}</td>
-                        <td>
-                            {% if item.is_active == True %}
-                            <span class="badge bg-success text-light p-2">Approved</span>
+                        <td>{% if item.is_active == True %} <span
+                                class="badge bg-success text-light p-2">Approved</span>
                             {% else %}
                             {% if item.is_reject == True%}
                             <span class="badge bg-danger text-light p-2">Cancel</span>
@@ -53,13 +50,22 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center list-action">
-
+                                <a class="badge bg-success mx-2"
+                                    href="{% url 'App_Account:pendingrentpreview' item.id %}"><i
+                                        class="fas fa-eye"></i></a>
+                                {% if item.is_rented == False %}
                                 {% if item.is_active == False %}
-                                <a class="badge bg-success mx-2" href="{% url 'App_Account:editrent' item.id %}"><i
-                                        class="fas fa-edit"></i></a>
-                                <a class="badge bg-danger btnDelete"
-                                    href="{% url 'App_Account:rentdelete' item.id %}"><i class="fa fa-trash"></i></a>
-                                {% endif %}
+                                <a class="badge bg-success mx-2 btnApprove"
+                                    href="{% url 'App_Account:approvependingrent' item.id %}"><i
+                                        class="fas fa-check"></i></a>
+                                {% endif%}
+                                {% if item.is_active == True %}
+                                {% if item.is_reject == False %}
+                                <a class="badge bg-danger btnReject"
+                                    href="{% url 'App_Account:cancelpendingrent' item.id %}">X</a>
+                                {% endif%}
+                                {% endif%}
+                                {% endif%}
                             </div>
                         </td>
                     </tr>
@@ -76,15 +82,23 @@
 <script>
     $(document).ready(function () {
         $('#rentlist').DataTable();
-        $(document).on('click', '.btnDelete', function (event) {
+        $(document).on('click', '.btnApprove', function (event) {
             event.preventDefault();
             var url = $(this).attr('href');
 
-            $.alert.open('warning', 'Are you sure you want to delete this post?', function (confirmed) {
+            $.alert.open('warning', 'Are you sure you want to approve this post?', function (confirmed) {
                 if (confirmed) {
                     window.location.href = url;
-                } else {
-                    $.alert.open('info', 'Your post is safe!');
+                }
+            });
+        })
+        $(document).on('click', '.btnReject', function (event) {
+            event.preventDefault();
+            var url = $(this).attr('href');
+
+            $.alert.open('warning', 'Are you sure you want to cancel this post?', function (confirmed) {
+                if (confirmed) {
+                    window.location.href = url;
                 }
             });
         })

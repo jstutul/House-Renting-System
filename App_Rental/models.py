@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from decimal import Decimal
 from ckeditor.fields import RichTextField
-
+from django.utils import timezone
 
 class City(models.Model):
     name = models.CharField(max_length=200, blank=False)
@@ -19,8 +19,8 @@ class House(models.Model):
     title = models.CharField(max_length=500, blank=False)
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING)
     address = models.CharField(max_length=500, blank=False)
-    house_name = models.CharField(max_length=10, choices=HOUSE_TYPE_LIST, default="1")
-    house_type = models.CharField(max_length=200, null=True)
+    house_type = models.CharField(max_length=10, choices=HOUSE_TYPE_LIST, default="1")
+    house_name = models.CharField(max_length=200, null=True)
     house_area = models.IntegerField(default=800)
     description = RichTextField(null=True)
     is_parking = models.BooleanField(default=True)
@@ -32,6 +32,9 @@ class House(models.Model):
     advacne_rent = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
     images = models.ManyToManyField('HouseImage', related_name='houses', blank=True)
     is_active=models.BooleanField(default=False)
+    is_reject=models.BooleanField(default=False)
+    is_rented=models.BooleanField(default=False)
+    created=models.DateTimeField(auto_now=True,auto_now_add=False)
 
     def __str__(self):
         return self.title

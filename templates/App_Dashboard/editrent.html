@@ -80,13 +80,13 @@ EasyRent-Add rent post
                                 <label for="txtBuilding" class="form-label">Parking Available</label>
                                 <br>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="txtParking"
-                                        id="txtParkingYes" value="1" {{ my_check }}>
+                                    <input class="form-check-input" type="radio" name="txtParking" id="txtParkingYes"
+                                        value="1" {{ my_check }}>
                                     <label class="form-check-label" for="txtParkingYes">Yes</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="txtParking"
-                                        id="txtParkingNo" value="0" {{ my_not_check }}>
+                                    <input class="form-check-input" type="radio" name="txtParking" id="txtParkingNo"
+                                        value="0" {{ my_not_check }}>
                                     <label class="form-check-label" for="txtParkingNo">No</label>
                                 </div>
                             </div>
@@ -143,11 +143,20 @@ EasyRent-Add rent post
                         <div class="row my-2">
                             <div class="col-lg-12 mb-2">
                                 <label for="txtImages" class="form-label">Images</label>
-                                <input class="form-control" type="file" multiple="" name="txtImages" id="txtImages">
+                                <input class="form-control" type="file" multiple="" name="txtImages" value=""
+                                    id="txtImages">
+                                {% for image in house.images.all %}
+                                <input type="hidden" name="existing_images" value="{{ image.image.url }}">
+                                {% endfor %}
                             </div>
                             <div class="col-lg-12">
                                 <label for="txtThumbnail" class="form-label">Preview Image</label>
                                 <div class="img-container d-flex" id="imagePreviews">
+                                    {% for image in house.images.all %}
+                                    <div class="position-relative"><img src="{{ image.image.url }}"
+                                            style="width: 120px; height: 120px; margin-right: 10px; margin-bottom: 10px;">
+                                    </div>
+                                    {% endfor %}
                                 </div>
 
                             </div>
@@ -162,6 +171,7 @@ EasyRent-Add rent post
     </div>
 
 </div>
+
 {% endblock %}
 {% block js%}
 <script>
@@ -269,10 +279,6 @@ EasyRent-Add rent post
             }
             if (txtAdvance == "") {
                 $.alert.open('error', 'Enter advance amount.');
-                return false;
-            }
-            if (txtImages.files.length == "0") {
-                $.alert.open('error', 'Select an images.');
                 return false;
             }
 
