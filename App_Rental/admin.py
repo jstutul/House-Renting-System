@@ -5,3 +5,4 @@ from App_Rental.models import *
 admin.site.register(City)
 admin.site.register(House)
 admin.site.register(HouseImage)
+admin.site.register(HouseComment)

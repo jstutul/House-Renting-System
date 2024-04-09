@@ -1,0 +1,83 @@
+<!-- 
+<h4 class="p-title mt-20"><b>{{ comments.count }} COMMENTS</b></h4>
+<div style="max-height: 1000px;overflow: auto;">
+    {% for comment in comments %}
+
+        <div class="event-replied-comments container mt-2 ml-40" style="display: none">
+            {% for reply in comment.replies.all %}
+            <blockquote class="blockquote">
+                <p class="mb-0" style="color: #0000cc;font-size: 15px;">{{ reply.content }}</p>
+                <footer class="blockquote-footer">
+
+                    by
+                    <img src="{{ reply.user.regularuser.photo.url }}" width="25px" height="25px" class="comment-img">
+                    <cite title="Source Title" style="color: #29b323">{{ reply.user|capfirst }}</cite>
+                    <code>{{ reply.timestamp }}</code>
+
+                </footer>
+            </blockquote>
+            {% endfor %}
+
+            <div class="form-group row ml-60 ">
+                <form class="event-reply-form form-block form-plr-15 form-h-45 form-mb-20 form-brdr-lite-white mb-md-50"
+                    action="{% url 'details' rent.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                    {{ comment_form }}
+                    <button class="btn btn-primary mt-2" type="submit"><b>LEAVE A REPLY</b></button>
+                </form>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+    </div> -->
+
+
+<h3>Comment </h3>
+<form class="scope-comment-form" action="{% url 'details' rent.id %}" method="post">{% csrf_token %}
+    {{ comment_form }}
+    <button class="btn btn-primary mt-1" type="submit"><b>COMMENT</b></button>
+</form>
+
+
+<h4 class="p-title mt-20" style="margin-top: 2%;"><b>{{ comments.count }} COMMENTS</b></h4>
+<div style="max-height: 1200px;overflow: auto;">
+    {% for comment in comments %}
+    <div class="blockquote">
+        <p class="mb-0" style="font-size: 14px;">{{ comment.content }}</p>
+        <footer class="blockquote-footer mt-2">by
+            <img src="{{ comment.user.userprofile.photo.url }}" width="25px" height="25px" class="comment-img">
+            <span title="Source Title mx-4" style="color: red;margin-right: 10px;">
+                {{comment.user|capfirst}}</span><code>{{ comment.timestamp }}</code>
+            <button type="submit" class="scope-reply-btn btn btn-outline-dark btn-sm">Reply</button>
+        </footer>
+    </div>
+    <div class="scope-replied-comments container mt-2 ml-40" style="display: none;padding: 2% 4%;">
+        {% for reply in comment.replies.all %}
+        <div class="blockquote">
+            <p class="mb-0" style="font-size: 14px;">{{ reply.content }}</p>
+            <footer class="blockquote-footer mt-2">
+                by
+                <img src="{{ reply.user.userprofile.photo.url }}" width="25px" height="25px" class="comment-img">
+                <cite class="mx-2" title="Source Title" style="color: #29b323">{{ reply.user|capfirst }}</cite>
+                <code>{{ reply.timestamp }}</code>
+
+            </footer>
+            </blockquote>
+            {% endfor %}
+            <div class="form-group row ml-60 ">
+                <form class="scope-reply-form" action="{% url 'details' rent.id %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                    {{ comment_form }}
+                    <button class="btn btn-success my-2" style="margin-top: 2%;" type="submit"><b>REPLY</b></button>
+                </form>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+    </div>

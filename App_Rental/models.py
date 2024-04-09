@@ -43,3 +43,14 @@ class HouseImage(models.Model):
 
     def __str__(self):
         return f"Image {self.id}"
+
+
+class HouseComment(models.Model):
+    post = models.ForeignKey(House,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    reply = models.ForeignKey('HouseComment',on_delete=models.CASCADE,null=True,related_name="replies")
+    content = models.TextField(max_length=160)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '{}-{}'.format(self.post.title,str(self.post.owner))

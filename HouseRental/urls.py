@@ -10,6 +10,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',Home,name='home'),
     path('details/<int:id>',Details,name="details"),
+    path('checkout/',checkout,name="checkout"),
     path('reset-password/',
          PasswordResetView.as_view(template_name='App_Account/password_reset_form.html'), name='password_reset'),
     path('reset-password/done/',

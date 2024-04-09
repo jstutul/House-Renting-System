@@ -94,7 +94,68 @@
     <script src="{% static 'js/bootstrap.bundle.min.js'%}"></script>
     <script src="{% static 'js/main.js'%}"></script>
     <script src="{% static 'alert/js/alert.js'%}"></script>
+    <script>
+        $(document).ready(function (event) {
+            $(".scope-reply-btn").click(function () {
+                $(this).parent().parent().next(".scope-replied-comments").fadeToggle();
+            });
+
+            $(document).on("submit", ".scope-comment-form", function (event) {
+                console.log("scope comment");
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: $(this).attr("action"),
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    success: function (response) {
+                        $(".scope-comment-section").html(response["form"]);
+                        $("textarea").val("");
+                        $(".scope-reply-btn").click(function () {
+                            $(this)
+                                .parent()
+                                .parent()
+                                .next(".scope-replied-comments")
+                                .fadeToggle();
+                        });
+                        $("textarea").val("");
+                    },
+                    error: function (rs, e) {
+                        console.log(rs.responseText);
+                    },
+                });
+            });
+            $(document).on("submit", ".scope-reply-form", function (event) {
+                console.log("ok");
+                event.preventDefault();
+                $.ajax({
+                    type: "POST",
+                    url: $(this).attr("action"),
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    success: function (response) {
+                        $(".scope-comment-section").html(response["form"]);
+                        $("textarea").val("");
+                        $(".scope-reply-btn").click(function () {
+                            $(this)
+                                .parent()
+                                .parent()
+                                .next(".scope-replied-comments")
+                                .fadeToggle();
+                        });
+                        $("textarea").val("");
+                    },
+                    error: function (rs, e) {
+                        console.log(rs.responseText);
+                    },
+                });
+            });
+
+        })
+
+    </script>
     {% block js %}
+
     {% endblock %}
 </body>
 

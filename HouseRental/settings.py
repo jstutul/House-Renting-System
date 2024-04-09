@@ -136,3 +136,7 @@ EMAIL_HOST_USER = 'easyyrentt@gmail.com'
 EMAIL_HOST_PASSWORD = 'ihilprokfwyahtzw'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51OgtcCLCGAkvlIlNz6H8FwtAQbNS1uigVMzy6drr07FgGAtTS8Hgewk3Ov2gBGiltS0BEu34DRRbWF6G3wvm6bbX00NwQamDTm'
+STRIPE_SECRET_KEY = 'sk_test_51OgtcCLCGAkvlIlNgoW57q9mkyMvLod817NagBUC8v4yDMzr2vnTd4berILbQNsBORDkUR7Oj1cveMudlLj546Xb00aRakTZVR'
