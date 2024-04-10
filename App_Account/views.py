@@ -13,10 +13,10 @@ import requests
 from django.contrib.auth.forms import PasswordChangeForm
 from django.urls import reverse
 from functools import wraps
-from App_Rental.models import City,House,HouseImage,HOUSE_TYPE_LIST
+from App_Rental.models import City,House,HouseImage,HOUSE_TYPE_LIST,HouseRent
 from App_Rental.forms import HouseForm
 from django.shortcuts import get_object_or_404
-
+from datetime import date
 
 
 def house_owner_required(view_func):
@@ -225,11 +225,13 @@ def RentEditView(request,id):
         txtMonthlyRent = request.POST.get('txtMonthlyRent')
         txtAdvance = request.POST.get('txtAdvance')
         txtDescription = request.POST['description']
+        rentForm = request.POST.get('txtRentFrom')
         city = City.objects.get(id=txtCity)
         is_parking = True if txtParking == "1" else False  
 
         house.title = txtTitle
         house.city = city
+        house.rent_from=rentForm
         house.address = txtAddress
         house.house_name = txtBuilding
         house.house_type = txtType
@@ -280,7 +282,8 @@ def RentEditView(request,id):
         'house_form': house_form,
         'house_types': new_house_type,
         'my_not_check':my_not_check,
-        'my_check':my_check
+        'my_check':my_check,
+        'current_date':date.today()
     }
     return render(request,'App_Dashboard/editrent.html',context)
 
@@ -289,6 +292,7 @@ def RentEditView(request,id):
 def AddRentView(request):
     cities= City.objects.filter(is_active=True)
     house_type_list = list(HOUSE_TYPE_LIST)
+    current_date = date.today()
     if request.method == 'POST':
         txtTitle = request.POST.get('txtTitle')
         txtCity = request.POST.get('txtCity')
@@ -303,12 +307,13 @@ def AddRentView(request):
         txtMapUrl = request.POST.get('txtMapUrl')
         txtMonthlyRent = request.POST.get('txtMonthlyRent')
         txtAdvance = request.POST.get('txtAdvance')
+        rentForm = request.POST.get('txtRentFrom')
         txtDescription = request.POST['description']
         if txtParking=="1":
             txtParking=True
         else:
             txtParking=False    
-  
+        print(rentForm)
         owner = request.user
         city = City.objects.get(id=txtCity)
         house = House.objects.create(
@@ -317,6 +322,7 @@ def AddRentView(request):
             city=city,
             address=txtAddress,
             house_name=txtBuilding,
+            rent_from=rentForm,
             house_type=txtType,
             house_area=txtArea,
             description=txtDescription,
@@ -336,8 +342,6 @@ def AddRentView(request):
                 print(image_file_path)
                 house_image = HouseImage.objects.create(image=image_file_path)
                 house.images.add(house_image)
-        else:
-            print("img nai")
         house.save()
         messages.success(request,"Rent post create successfully.")  
         return redirect("App_Account:addrent")  
@@ -346,7 +350,8 @@ def AddRentView(request):
     context={
         'cities':cities,
         'house_form': house_form, 
-        'house_types':house_type_list
+        'house_types':house_type_list,
+        'current_date':current_date
     }
     return render(request,'App_Dashboard/addrent.html',context)
 
@@ -361,9 +366,25 @@ def RentDeleteView(request, id):
     except House.DoesNotExist:
         messages.info(request, "House not found.")
     return redirect("App_Account:rentlist")
-    
 
 
+@house_owner_required
+def RentedListView(request):
+    myrent_list=HouseRent.objects.filter(post__owner=request.user,is_paid=True)
+    context={
+        'myrent_list':myrent_list
+    }
+    return render(request,'App_Dashboard/rentedlist.html',context)    
+
+@house_owner_required
+def RentedListDetailsView(request,id):
+    myrent_list=HouseRent.objects.get(id=id)
+    if myrent_list.post.owner != request.user:
+        return render(request, 'accessdenied.html')
+    context={
+        'singlerented':myrent_list
+    }
+    return render(request,'App_Dashboard/renteddetails.html',context)    
 
 
 

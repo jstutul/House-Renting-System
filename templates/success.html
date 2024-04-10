@@ -1,0 +1,31 @@
+{% extends 'base.html'%}
+{% block css%}
+<style>
+    .footer {
+        position: fixed;
+        bottom: 0;
+    }
+</style>
+{% endblock%}
+
+{% block main%}
+<div class="container bg-success" style="margin-top:5%;margin-bottom: 5%;">
+    <div class="row">
+        <div class="jumbotron p-4" style="box-shadow: 2px 2px 4px #000000;">
+            <h2 class="text-center text-primary">YOUR ORDER HAS BEEN RECEIVED</h2>
+            <h4 class="text-center text-primary">Thank you for your payment, it’s processing</h3>
+
+                <p class="text-center text-white">Your order # is: {{order.id}}</p>
+                <p class="text-center text-white">You will receive an order confirmation email with details of your
+                    order and a
+                    link to
+                    track your process.</p>
+                <center>
+                    <div class="btn-group" style="margin-top:50px;">
+                        <a href="{% url 'details' order.post.id %}" class="btn btn-lg btn-warning">CONTINUE</a>
+                    </div>
+                </center>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,HttpResponse
 from App_Account.models import *
 from App_Rental.models import *
 from App_Rental.forms import CommentForm
@@ -6,9 +6,11 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.conf import settings
 import stripe
+from django.core.mail import EmailMessage
+from django.urls import reverse
 stripe.api_key = settings.STRIPE_SECRET_KEY
 def Home(request):
-    rentpost=House.objects.filter(is_active=True)
+    rentpost=House.objects.filter(is_active=True,is_rented=False)
     userlist=UserProfile.objects.all()
     context={
         'toppost':rentpost[:6],
@@ -57,20 +59,68 @@ def Details(request,id):
 
 
 
-def checkout(request):
-    if request.method == 'POST':
-        stripe_token = request.POST['stripeToken']
+
+
+def create_checkout_session(request,id):
+    house=House.objects.get(id=id)
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        line_items=[
+            {
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': house.title,
+                    },
+                    'unit_amount': int(house.advacne_rent)*1000,  # Amount in cents
+                },
+                'quantity': 1,
+            },
+        ],
+        mode='payment',
+        success_url=request.build_absolute_uri(reverse('success'))+  f'?session_id={{CHECKOUT_SESSION_ID}}',
+        cancel_url=request.build_absolute_uri(reverse('cancel')),
+    )
+    order=HouseRent.objects.create(
+        post=house,
+        user = request.user,
+        transaction_id =session.id
+    )
+    order.save()
+    return redirect(session.url)
+
+def success(request):
+    transaction_id = request.GET.get('session_id')
+    if transaction_id:
         try:
-            charge = stripe.Charge.create(
-                amount=1000,  # Amount in cents
-                currency='usd',
-                description='Example charge',
-                source=stripe_token,
-            )
-            # Payment successful
-            return render(request, 'success.html')
-        except stripe.error.CardError as e:
-            # Payment failed
-            return render(request, 'failure.html', {'error': e.error.message})
+            order = HouseRent.objects.get(transaction_id=transaction_id)
+            order.is_paid = True
+            order.save()
+
+            house= House.objects.get(id=order.post.id)
+
+            if not house.is_rented:
+                house.is_rented=True
+                house.save()
+                mail_subject='EasyRent Order Confirmation'
+                message=render_to_string('orderconfirmation.html',{
+                    'user': request.user,
+                    'house': house,
+                    'order':order,
+                })
+                to_email = request.user.email
+                email = EmailMessage(
+                    mail_subject, message, to=[to_email]
+                )
+                email.send()
+            context={
+                'order':order,
+
+            }
+            return render(request, 'success.html',context)
+        except HouseRent.DoesNotExist:
+            return HttpResponse("Order not found.")
     else:
-        return render(request, 'checkout.html')
+        return HttpResponse("Transaction ID not provided.")
+def cancel(request):
+    return render(request, 'cancel.html')

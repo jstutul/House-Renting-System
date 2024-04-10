@@ -1,0 +1,122 @@
+{% extends 'App_Dashboard/base.html'%}
+{% load static%}
+{% block title %}
+EasyRent - details page
+{% endblock %}
+{% block css %}
+<style>
+    table,
+    th,
+    td {
+        border: 1px solid black;
+        padding: 10px;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #reportTable,
+        #reportTable * {
+            visibility: visible;
+        }
+
+        #reportTable {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block dashboard %}
+<div class="blog-single gray-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto card" id="reportTable">
+                <article class="article p-4">
+                    <h4 class="text-center">ORDER CONFIRMATION REPORT</h4>
+                    <hr>
+                    <div class="img-list my-4">
+                        <table id="">
+                            <thead>
+                                <tr>
+                                    <th>Rent Title</th>
+                                    <th>{{singlerented.post.title}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Purchaser </td>
+                                    <td>{{singlerented.user}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Purchaser Email</td>
+                                    <td>{{singlerented.user.email}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Purchaser City</td>
+                                    <td>{{singlerented.user.userprofile.city}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Purchaser Phone</td>
+                                    <td>{{singlerented.user.userprofile.mobile}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Purchaser Address</td>
+                                    <td>{{singlerented.user.userprofile.present_address}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Order No</td>
+                                    <td>{{singlerented.id}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Order Date</td>
+                                    <td>{{singlerented.created}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Paid Amount</td>
+                                    <td>{{singlerented.post.advacne_rent}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Due Amount</td>
+                                    <td>{{singlerented.due_amount}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Order Status</td>
+                                    <td>{% if singlerented.is_paid %} Paid {% else %} Cancel {% endif %}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="col-lg-12 text-center">
+                            <button class="btn btn-success mt-2" id="btnDownload">Download as PDF</button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+    integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    // Add event listener to the "Download as PDF" button
+    const downloadButton = document.getElementById('btnDownload');
+    downloadButton.addEventListener('click', function () {
+        downloadButton.parentElement.remove();
+        var element = document.getElementById('reportTable');
+        element.style.marginTop = '200px';
+        html2pdf().from(element).save('Report.pdf'); // Specify custom filename here
+    });
+</script>
+{% endblock %}

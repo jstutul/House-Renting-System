@@ -337,6 +337,7 @@ EasyRent - details page
                         <ul>
                             <li>City : {{rent.city.name}} </li>
                             <li>Type : {{houseType}} </li>
+                            <li>Rent From : {{rent.rent_from}} </li>
                             <li>House Name : {{rent.house_name}} </li>
                             <li>Total Area : {{rent.house_area}} sq. ft </li>
                             <li>Parking : {% if rent.is_parking %} Yes {% else %} No {% endif %}</li>
@@ -353,27 +354,28 @@ EasyRent - details page
                         <div class="col-lg-12">
                             {{rent.map_link|safe}}
                         </div>
+                        {% if request.user.userprofile.userType == "2" %}
+                        <div class="stripe-payment card p-2 my-2">
+                            {% if rent.is_rented == False%}
+                            <h6>Pay advance amount ${{rent.advacne_rent}} for confirmation of this houese or apartment.
+                            </h6>
+                            <form action="{% url 'checkout' rent.id %}" method="POST">
+                                {% csrf_token %}
+                                <button class="btn btn-primary" type="submit">Pay Now</button>
+                            </form>
+                            {% else %}
+                            <h6 class="text-center text-primary">This House or Aparment have been already booked
+                            </h6>
+                            {% endif %}
+                        </div>
+                        {% endif %}
 
                     </div>
+                    <hr>
                     <div class="scope-comment-section">
                         {% include 'comment_section.html' %}
                     </div>
-                    <div class="stripe-payment">
-                        <form action="{% url 'checkout' %}" method="post" id="payment-form">
-                            {% csrf_token %}
-                            <div class="form-row">
-                                <label for="card-element">
-                                    Credit or debit card
-                                </label>
-                                <div id="card-element">
-                                    <!-- A Stripe Element will be inserted here. -->
-                                </div>
-                                <!-- Used to display form errors. -->
-                                <div id="card-errors" role="alert"></div>
-                            </div>
-                            <button class="btn btn-success">Submit Payment</button>
-                        </form>
-                    </div>
+
                 </article>
 
             </div>
@@ -422,21 +424,6 @@ EasyRent - details page
             $(".sg-img").removeClass("selected");
             $(this).parent(".sg-img").addClass("selected");
         });
-    });
-</script>
-<script>
-    var stripe = Stripe('pk_test_51OgtcCLCGAkvlIlNz6H8FwtAQbNS1uigVMzy6drr07FgGAtTS8Hgewk3Ov2gBGiltS0BEu34DRRbWF6G3wvm6bbX00NwQamDTm');
-    var elements = stripe.elements();
-    var cardElement = elements.create('card');
-    cardElement.mount('#card-element');
-    var cardErrors = document.getElementById('card-errors');
-
-    cardElement.addEventListener('change', function (event) {
-        if (event.error) {
-            cardErrors.textContent = event.error.message;
-        } else {
-            cardErrors.textContent = '';
-        }
     });
 </script>
 {% endblock %}

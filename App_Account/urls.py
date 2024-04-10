@@ -2,7 +2,8 @@ from django.urls import path
 from App_Account.views import (
     SignupView, LoginView,activateView,DashboardView,LogoutView,PasswordChange,ProfileView,
     ProfileUpdateView,RentListView,AddRentView,RentEditView,RentDeleteView,PendingRentListView,
-    PendingRentPreviewiew,ApprovePendingRentListView,CancelPendingRentListView
+    PendingRentPreviewiew,ApprovePendingRentListView,CancelPendingRentListView,RentedListView,
+    RentedListDetailsView
     )
 
 app_name = 'App_Account'
@@ -23,6 +24,9 @@ urlpatterns = [
     path('add-rent',AddRentView,name='addrent'),
     path('edit-rent/<int:id>',RentEditView,name='editrent'),
     path('delete-rent/<int:id>',RentDeleteView,name='rentdelete'),
+
+    path('rented-list',RentedListView,name='rentedlist'),
+    path('rented-details/<int:id>',RentedListDetailsView,name='renteddetails'),
 
     ################### Renter Part #######################
     path('pending-rent-list',PendingRentListView,name='pendingrentlist'),

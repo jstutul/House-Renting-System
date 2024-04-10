@@ -1,0 +1,70 @@
+{% extends 'App_Dashboard/base.html'%}
+{% load static%}
+{% block dashboard%}
+{% block css %}
+<link href="https://cdn.datatables.net/v/dt/dt-2.0.3/datatables.min.css" rel="stylesheet">
+<style>
+    .dataTable {
+        width: 100% !important;
+    }
+</style>
+{% endblock %}
+{% include 'alert.html'%}
+<div class="container-fluid px-4">
+    <div class="row my-5">
+        <div class="col-lg-12 mb-2">
+            <span class="mb-3" style="font-size: 24px;">Rented List
+        </div>
+        <hr>
+
+
+        <div class="col">
+            <table class="table bg-white rounded shadow-sm  table-hover" id="rentlist">
+                <thead>
+                    <tr>
+                        <th scope="col" width="50">SL</th>
+                        <th scope="col">Post Title</th>
+                        <th scope="col">Purchase By</th>
+                        <th scope="col">Total Price</th>
+                        <th scope="col">Paid Amount</th>
+                        <th scope="col">Due Amount</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in myrent_list%}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{item.post.title}}</td>
+                        <td>{{item.user}}</td>
+                        <td>{{item.post.monthly_rent}}</td>
+                        <td>{{item.post.advacne_rent}}</td>
+                        <td>{{item.due_amount}}</td>
+                        <td>
+                            {% if item.is_paid == True %}
+                            <span class="badge bg-success text-light p-2">Paid</span>
+                            {% else %}
+                            <span class="badge bg-warning text-light p-2">cancel</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center list-action">
+                                <a class="badge bg-danger" href="{% url 'App_Account:renteddetails' item.id %}"><i
+                                        class="fa fa-eye"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block js%}
+<script src="https://cdn.datatables.net/v/dt/dt-2.0.3/datatables.min.js"></script>
+<script>
+</script>
+{% endblock%}

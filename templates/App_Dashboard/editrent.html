@@ -134,6 +134,13 @@ EasyRent-Add rent post
                                     placeholder="Enter advance amount" name="txtAdvance" value="{{house.advacne_rent}}">
                             </div>
                         </div>
+                        <div class="row mt-2">
+                            <div class="col-lg-6">
+                                <label for="txtRentFrom" class="form-label">Rent From</label>
+                                <input type="date" class="form-control" id="txtRentFrom" name="txtRentFrom"
+                                    value="{{house.rent_from|date:'Y-m-d'}}" min="{{current_date|date:'Y-m-d' }}">
+                            </div>
+                        </div>
 
                         <div class="row mt-2">
                             <div class="col-lg-12">

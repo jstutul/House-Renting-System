@@ -5,12 +5,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, \
     PasswordResetCompleteView
-from .views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',Home,name='home'),
     path('details/<int:id>',Details,name="details"),
-    path('checkout/',checkout,name="checkout"),
+    path('checkout/<int:id>',create_checkout_session,name="checkout"),
+    path('success/', success, name='success'),
+    path('cancel/', cancel, name='cancel'),
     path('reset-password/',
          PasswordResetView.as_view(template_name='App_Account/password_reset_form.html'), name='password_reset'),
     path('reset-password/done/',

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from decimal import Decimal
 from ckeditor.fields import RichTextField
 from django.utils import timezone
+from datetime import timedelta
 
 class City(models.Model):
     name = models.CharField(max_length=200, blank=False)
@@ -15,10 +16,17 @@ HOUSE_TYPE_LIST = (
         ('2', 'Building'),
     )
 class House(models.Model):
+    def next_month_first_day():
+        today = timezone.localdate()
+        # Calculate the first day of next month
+        first_day_next_month = today.replace(day=1) + timedelta(days=32 - today.day)
+        return first_day_next_month
+     
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=500, blank=False)
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING)
     address = models.CharField(max_length=500, blank=False)
+    rent_from = models.DateField(default=next_month_first_day)
     house_type = models.CharField(max_length=10, choices=HOUSE_TYPE_LIST, default="1")
     house_name = models.CharField(max_length=200, null=True)
     house_area = models.IntegerField(default=800)
@@ -54,3 +62,17 @@ class HouseComment(models.Model):
 
     def __str__(self):
         return '{}-{}'.format(self.post.title,str(self.post.owner))
+  
+
+class HouseRent(models.Model):
+    post = models.ForeignKey(House,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    is_paid = models.BooleanField(default=False)
+    transaction_id = models.CharField(max_length=1000)
+    created =models.DateTimeField(auto_now=True,auto_now_add=False)
+    updated=models.DateField(auto_now=False,auto_now_add=True)
+
+    def __str__(self):
+        return '{}-{}'.format(self.post.title,self.user)
+    def due_amount(self):
+        return self.post.monthly_rent-self.post.advacne_rent
