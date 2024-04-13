@@ -1,10 +1,15 @@
 <a href="{% url 'App_Account:dashboard'%}"
-        class="list-group-item list-group-item-action bg-transparent second-text active"><i
+        class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                 class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
 <a href="{% url 'App_Account:pendingrentlist'%}"
         class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                 class="fas fa-chart-line me-2"></i>Pending Rent Post</a>
-<a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+<a href="{% url 'App_Account:purchasereport'%}"
+        class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                 class="fas fa-paperclip me-2"></i>Rented Reports</a>
-<a href="#" class="list-group-item list-group-item-action bg-transparent text-danger fw-bold"><i
-                class="fas fa-power-off me-2"></i>Logout</a>
+<a href="{% url 'App_Account:userreport'%}"
+        class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+                class="fas fa-users me-2"></i>User Report</a>
+<a href="{% url 'App_Account:contact'%}"
+        class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+                class="fas fa-envelope me-2"></i>Contact Message</a>

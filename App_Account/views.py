@@ -13,10 +13,13 @@ import requests
 from django.contrib.auth.forms import PasswordChangeForm
 from django.urls import reverse
 from functools import wraps
-from App_Rental.models import City,House,HouseImage,HOUSE_TYPE_LIST,HouseRent
+from App_Rental.models import City,House,HouseImage,HOUSE_TYPE_LIST,HouseRent,ContractUs
 from App_Rental.forms import HouseForm
 from django.shortcuts import get_object_or_404
 from datetime import date
+from App_Account.models import *
+from django.core.files.storage import FileSystemStorage
+# from weasyprint import HTML
 
 
 def house_owner_required(view_func):
@@ -164,7 +167,23 @@ def PasswordChange(request):
 
 @login_required(login_url='App_Account:login') 
 def DashboardView(request):
-    return render(request,'App_Dashboard/dashboard.html')    
+    houses=House.objects.all()
+    users=UserProfile.objects.all()
+    rented=HouseRent.objects.filter(is_paid=True)
+    total=0
+    for i in rented:
+        total+=i.post.advacne_rent
+    context={
+        'housepost':houses.count,
+        'approved':houses.filter(is_active=True,is_reject=False).count,
+        'rejected':houses.filter(is_reject=True).count,
+        'saled':houses.filter(is_rented=True).count,
+        'users':users.count,
+        'houseowner':users.filter(userType=1).count,
+        'renter':users.filter(userType=2).count,
+        'totalreneted':total
+    }
+    return render(request,'App_Dashboard/dashboard.html',context)    
 
 @login_required(login_url='App_Account:login') 
 def ProfileView(request):
@@ -448,3 +467,129 @@ def CancelPendingRentListView(request,id):
     except House.DoesNotExist:
         messages.info(request, "Post not found.")
     return redirect("App_Account:pendingrentlist")
+
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from io import BytesIO
+from datetime import datetime, timedelta
+from django.template.loader import get_template
+
+@admin_required
+def PurchaseReportListView(request):
+    return render(request,'App_Dashboard/purchasereport.html')
+
+@admin_required
+def ReportView(request):
+    fdate = request.GET.get('fromdate', '')
+    tdate = request.GET.get('todate', '')
+    fdate_obj = datetime.strptime(fdate, '%Y-%m-%d')
+    tdate_obj = datetime.strptime(tdate, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)
+
+    newdata = HouseRent.objects.filter(
+        is_paid=True,
+        created__range=[fdate_obj, tdate_obj]
+    )
+
+    # Prepare data to pass to the template
+    sales_data = [
+        {
+            "SL": i + 1,  # Use counter variable i + 1 as SL (starts from 1)
+            "Title": item.post.title,
+            "HouseOwner": item.post.owner,
+            "Renter": item.user,
+            "PurchaseDate": item.created,
+            "PayAmount": item.post.advacne_rent,
+            "DueAmount": item.due_amount,
+            "Status": item.is_paid
+        }
+        for i, item in enumerate(newdata)
+    ]
+    print(f"{fdate} to {tdate}")
+    context = {'sales': sales_data,'daterange':f"{fdate} to {tdate}"}
+    return render_to_pdf('App_Dashboard/report.html', context)
+
+def render_to_pdf(template_src, context_dict):
+    """
+    Helper function to render HTML template as PDF using xhtml2pdf.
+    """
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+
+
+
+
+@admin_required
+def UserReportView(request):
+    return render(request,'App_Dashboard/userreport.html')
+
+@admin_required
+def UserWiseReportView(request):
+    usertype = request.GET.get('userType', '')
+    if usertype=="0":
+        newdata = UserProfile.objects.all()
+    else:
+        newdata = UserProfile.objects.filter(userType=str(usertype))
+
+    # Prepare data
+    user_data = [
+        {
+            "SL": i + 1,
+            "Username": item.user.username,
+            "Email": item.user.email,
+            "City": item.city,
+            "Phone": item.mobile,
+            "Address": item.present_address,
+            "Photo": item.photo.url if item.photo else '',  # Check if photo exists
+            "Nid": item.nid,
+            "UserType": item.get_user_type_display(),  # Use the custom method to get user type display name
+        }
+        for i, item in enumerate(newdata)
+    ]
+
+    print(user_data)
+    # Set typeName based on usertype for context
+    typeName = dict(USER_TYPE_LIST).get(usertype, "")
+
+    context = {'sales': user_data, 'usertype': typeName}
+    return render_to_pdf('App_Dashboard/userreportdata.html', context)
+
+@admin_required
+def ContactMessage(request):
+    contacts=ContractUs.objects.all()
+    print(contacts)
+    context={
+        'contacts':contacts
+    }
+    return render(request,'App_Dashboard/contact.html',context)
+
+
+
+
+
+##RENTED USER######
+
+@renter_required
+def PurchaseListView(request):
+    myrent_list=HouseRent.objects.filter(user=request.user,is_paid=True)
+    context={
+        'myrent_list':myrent_list
+    }
+    return render(request,'App_Dashboard/purchase_list.html',context)
+
+@renter_required
+def PurchaseDetailsView(request,id):
+    myrent_list=HouseRent.objects.get(id=id)
+    if myrent_list.user != request.user:
+        return render(request, 'accessdenied.html')
+    context={
+        'singlerented':myrent_list
+    }
+    return render(request,'App_Dashboard/purchasedetails.html',context)    
+

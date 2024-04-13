@@ -76,3 +76,13 @@ class HouseRent(models.Model):
         return '{}-{}'.format(self.post.title,self.user)
     def due_amount(self):
         return self.post.monthly_rent-self.post.advacne_rent
+    
+
+class ContractUs(models.Model):
+    name = models.CharField(max_length=50,blank=False)
+    email = models.EmailField(max_length=50,blank=False)
+    message = models.TextField(max_length=500,blank=False)
+    created = models.DateTimeField(auto_now=True,auto_now_add=False)
+
+    def __str__(self):
+        return '{}-{}'.format(self.name,self.message)

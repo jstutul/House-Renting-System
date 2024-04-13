@@ -8,6 +8,8 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',Home,name='home'),
+    path('post',RentPost,name='post'),
+    path('contact',ContactView,name='contact'),
     path('details/<int:id>',Details,name="details"),
     path('checkout/<int:id>',create_checkout_session,name="checkout"),
     path('success/', success, name='success'),

@@ -8,6 +8,11 @@ from django.conf import settings
 import stripe
 from django.core.mail import EmailMessage
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from decimal import Decimal,InvalidOperation
+from django.core.paginator import EmptyPage,PageNotAnInteger,Paginator
+from django.contrib import messages
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
 def Home(request):
     rentpost=House.objects.filter(is_active=True,is_rented=False)
@@ -20,6 +25,7 @@ def Home(request):
     }
     return render(request,'index.html',context)
 
+@login_required(login_url='App_Account:login')
 def Details(request,id):
     try:
         singlepost=House.objects.get(id=id)
@@ -124,3 +130,83 @@ def success(request):
         return HttpResponse("Transaction ID not provided.")
 def cancel(request):
     return render(request, 'cancel.html')
+
+
+def RentPost(request):
+    if request.method == 'GET':
+        txtSearch = request.GET.get('txtSearch','')
+        txtCity = request.GET.get('txtCity','0')
+        txtType = request.GET.get('txtType','0')
+        txtMin = request.GET.get('txtMin',0)
+        txtMax = request.GET.get('txtMax',0)
+
+        try:
+            txtMin_decimal = Decimal(txtMin)
+        except (InvalidOperation, ValueError):
+            txtMin_decimal = Decimal(0)
+
+        try:
+            txtMax_decimal = Decimal(txtMax)
+        except (InvalidOperation, ValueError):
+            txtMax_decimal = Decimal(0)
+
+        rentpost = House.objects.filter(is_active=True, is_rented=False)
+
+        if txtSearch:
+            rentpost = rentpost.filter(title__icontains=txtSearch)
+
+        if txtCity and txtCity != '0':
+            rentpost = rentpost.filter(city=txtCity)
+
+        if txtType and txtType != '0':
+            rentpost = rentpost.filter(house_type=txtType)
+
+        if txtMin_decimal!=0:
+            print(txtMin_decimal)
+            rentpost = rentpost.filter(monthly_rent__gte=txtMin_decimal)
+
+        if txtMax_decimal!=0:
+            rentpost = rentpost.filter(monthly_rent__lte=txtMax_decimal)
+
+        post_count=rentpost.count()
+        paginator =Paginator(rentpost,1)
+        page = request.GET.get('page')
+        paged_rents = paginator.get_page(page)
+
+        cities = City.objects.all()
+        new_cities=[]
+        for city in cities:
+            if int(city.id) == int(txtCity):
+                new_cities.append({'id': city.id, 'name': city.name, 's': 'selected'})
+            else:
+                new_cities.append({'id': city.id, 'name': city.name, 's': ''})
+        new_house_type = []
+        house_type_list = list(HOUSE_TYPE_LIST)    
+        for value,label in house_type_list:
+            if value == txtType:
+                new_house_type.append({'value': value, 'label': label, 's': 'selected'})
+            else:
+                new_house_type.append({'value': value, 'label': label, 's': ''})
+        print(new_house_type)
+
+    context={
+        'rentpost':paged_rents,
+        'cities':new_cities,
+        'house_types':new_house_type,
+        'post_count':post_count
+    }
+    return render(request,'post.html',context)
+
+def ContactView(request):
+    if request.method=="POST":
+        name=request.POST.get("name")
+        email=request.POST.get("email")
+        about=request.POST.get("about")
+        ContractUs.objects.create(
+            name=name,
+            email=email,
+            message=about
+        ).save()
+        messages.success(request,"your message is accepted ,wait for reply")
+        return redirect('contact')
+    return render(request,'contact.html')

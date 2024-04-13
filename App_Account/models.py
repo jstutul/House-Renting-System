@@ -24,6 +24,12 @@ class UserProfile(models.Model):
             if int(choice[0]) == int(self.userType):
                 return choice[1]
         return None
+    def get_user_type_display(self, type=None):
+        type_to_search = type if type else self.userType
+        for choice in USER_TYPE_LIST:
+            if choice[0] == type_to_search:
+                return choice[1]
+        return None
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):

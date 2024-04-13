@@ -1,3 +1,6 @@
+<a href="{% url 'App_Account:dashboard'%}"
+        class="list-group-item list-group-item-action bg-transparent second-text active"><i
+                class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
 <a href="{% url 'App_Account:profile'%}"
         class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                 class="fas fa-user me-2"></i>Profile</a>
@@ -9,6 +12,7 @@
         class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                 class="fas fa-chart-line me-2"></i>Rented List</a>
 {% elif request.user.userprofile.userType == "2"%}
-<a href="#" class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
+<a href="{% url 'App_Account:purchaselist'%}"
+        class="list-group-item list-group-item-action bg-transparent second-text fw-bold"><i
                 class="fas fa-chart-line me-2"></i>Purchase List</a>
 {% endif %}

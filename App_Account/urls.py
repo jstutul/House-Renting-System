@@ -3,7 +3,8 @@ from App_Account.views import (
     SignupView, LoginView,activateView,DashboardView,LogoutView,PasswordChange,ProfileView,
     ProfileUpdateView,RentListView,AddRentView,RentEditView,RentDeleteView,PendingRentListView,
     PendingRentPreviewiew,ApprovePendingRentListView,CancelPendingRentListView,RentedListView,
-    RentedListDetailsView
+    RentedListDetailsView,PurchaseListView,PurchaseDetailsView,PurchaseReportListView,ReportView,
+    UserReportView,UserWiseReportView,ContactMessage
     )
 
 app_name = 'App_Account'
@@ -33,4 +34,14 @@ urlpatterns = [
     path('pending-rent-view/<int:id>',PendingRentPreviewiew,name='pendingrentpreview'),
     path('pending-rent-approved/<int:id>',ApprovePendingRentListView,name='approvependingrent'),
     path('pending-rent-cancel/<int:id>',CancelPendingRentListView,name='cancelpendingrent'),
+
+    path('purchase-list',PurchaseListView,name='purchaselist'),
+    path('purchase-details/<int:id>',PurchaseDetailsView,name='purchasedetails'),
+
+    ################### Admin #######################
+    path('purchase-report',PurchaseReportListView,name='purchasereport'),
+    path('report-view',ReportView,name='purchasereport'),
+    path('report-user',UserReportView,name='userreport'),
+    path('report-user-view',UserWiseReportView,name='userwisereport'),
+    path('contact',ContactMessage,name='contact'),
 ]
