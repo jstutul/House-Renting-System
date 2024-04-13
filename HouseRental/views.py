@@ -78,7 +78,7 @@ def create_checkout_session(request,id):
                     'product_data': {
                         'name': house.title,
                     },
-                    'unit_amount': int(house.advacne_rent)*1000,  # Amount in cents
+                    'unit_amount': int(house.advacne_rent)*100,  # Amount in cents
                 },
                 'quantity': 1,
             },

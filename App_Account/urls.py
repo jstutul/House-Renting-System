@@ -40,7 +40,7 @@ urlpatterns = [
 
     ################### Admin #######################
     path('purchase-report',PurchaseReportListView,name='purchasereport'),
-    path('report-view',ReportView,name='purchasereport'),
+    path('report-view',ReportView,name='reportview'),
     path('report-user',UserReportView,name='userreport'),
     path('report-user-view',UserWiseReportView,name='userwisereport'),
     path('contact',ContactMessage,name='contact'),

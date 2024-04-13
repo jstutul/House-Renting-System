@@ -473,7 +473,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 from io import BytesIO
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,time
 from django.template.loader import get_template
 
 @admin_required
