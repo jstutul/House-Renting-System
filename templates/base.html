@@ -46,8 +46,9 @@
                             <div class="navbar-nav mr-auto py-0">
                                 <a href="{% url 'home' %}" class="nav-item nav-link">Home</a>
                                 <a href="{% url 'post' %}" class="nav-item nav-link">Post</a>
-                                <!-- <a href="about.html" class="nav-item nav-link">About</a> -->
+                                <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
                                 <a href="{% url 'contact'%}" class="nav-item nav-link">Contact</a>
+                                <a href="{% url 'faq' %}" class="nav-item nav-link">Faq</a>
                             </div>
                             <div class="navbar-nav">
                                 {% if user.is_authenticated %}

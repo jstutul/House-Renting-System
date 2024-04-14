@@ -210,3 +210,11 @@ def ContactView(request):
         messages.success(request,"your message is accepted ,wait for reply")
         return redirect('contact')
     return render(request,'contact.html')
+
+
+
+def FaqView(request):
+    return render(request,'faq.html')
+
+def AboutView(request):
+    return render(request,'about.html')
