@@ -169,7 +169,7 @@ def RentPost(request):
             rentpost = rentpost.filter(monthly_rent__lte=txtMax_decimal)
 
         post_count=rentpost.count()
-        paginator =Paginator(rentpost,1)
+        paginator =Paginator(rentpost,2)#per page e koyta post seta 
         page = request.GET.get('page')
         paged_rents = paginator.get_page(page)
 

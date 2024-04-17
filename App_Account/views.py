@@ -536,8 +536,6 @@ def UserWiseReportView(request):
         newdata = UserProfile.objects.all()
     else:
         newdata = UserProfile.objects.filter(userType=str(usertype))
-
-    # Prepare data
     user_data = [
         {
             "SL": i + 1,
@@ -546,15 +544,12 @@ def UserWiseReportView(request):
             "City": item.city,
             "Phone": item.mobile,
             "Address": item.present_address,
-            "Photo": item.photo.url if item.photo else '',  # Check if photo exists
+            "Photo": item.photo.url if item.photo else '',
             "Nid": item.nid,
-            "UserType": item.get_user_type_display(),  # Use the custom method to get user type display name
+            "UserType": item.get_user_type_display(),
         }
         for i, item in enumerate(newdata)
     ]
-
-    print(user_data)
-    # Set typeName based on usertype for context
     typeName = dict(USER_TYPE_LIST).get(usertype, "")
 
     context = {'sales': user_data, 'usertype': typeName}
@@ -593,3 +588,32 @@ def PurchaseDetailsView(request,id):
     }
     return render(request,'App_Dashboard/purchasedetails.html',context)    
 
+
+@admin_required
+def UserListView(request):
+    users=User.objects.all()
+    context={
+        'userlists':users,
+    }
+    return render(request,'App_Dashboard/userlist.html',context)
+
+
+@admin_required
+def UserActiveView(request,id):
+    s_value = request.GET.get("s")
+    user=User.objects.get(id=id)
+    if s_value=="1":
+        user.is_active=True
+        user.save()
+        messages.info(request,"User account activate now.")
+    elif s_value=="2":
+        user.is_active=False
+        user.save()
+        messages.info(request,"User account de-activate now.")
+    elif s_value=="3":
+        user.delete()
+        messages.info(request,"User account deleted.")
+    else:
+        messages.info(request,"Did not any effect")
+
+    return redirect("App_Account:userlists")

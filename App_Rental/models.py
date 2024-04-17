@@ -11,6 +11,8 @@ class City(models.Model):
 
     def __str__(self):
         return self.name
+    
+    
 HOUSE_TYPE_LIST = (
         ('1', 'Apartment'),
         ('2', 'Building'),

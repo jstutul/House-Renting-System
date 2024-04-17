@@ -4,7 +4,7 @@ from App_Account.views import (
     ProfileUpdateView,RentListView,AddRentView,RentEditView,RentDeleteView,PendingRentListView,
     PendingRentPreviewiew,ApprovePendingRentListView,CancelPendingRentListView,RentedListView,
     RentedListDetailsView,PurchaseListView,PurchaseDetailsView,PurchaseReportListView,ReportView,
-    UserReportView,UserWiseReportView,ContactMessage
+    UserReportView,UserWiseReportView,ContactMessage,UserListView,UserActiveView
     )
 
 app_name = 'App_Account'
@@ -44,4 +44,6 @@ urlpatterns = [
     path('report-user',UserReportView,name='userreport'),
     path('report-user-view',UserWiseReportView,name='userwisereport'),
     path('contact',ContactMessage,name='contact'),
+    path('userlists',UserListView,name='userlists'),
+    path('user-active/<int:id>',UserActiveView,name='useractive'),
 ]
